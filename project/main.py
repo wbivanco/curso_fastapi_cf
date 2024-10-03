@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi import HTTPException
 from database import User, Movie, UserReview
 from database import database as connection
-from schemas import UserBaseModel
+from schemas import UserRequestModel, UserResponseModel
 
 
 app = FastAPI(
@@ -31,8 +31,8 @@ async def index():
 async def about():
     return 'About'
 
-@app.post('/users')
-async def create_user(user: UserBaseModel):
+@app.post('/users', response_model=UserResponseModel)
+async def create_user(user: UserRequestModel):
 
     if User.select().where(User.username == user.username).exists():
         raise HTTPException(409, 'El usuario ya existe.')
@@ -44,7 +44,4 @@ async def create_user(user: UserBaseModel):
         password=hash_password
     )
 
-    return {
-        'id': user.id,
-        'username': user.username
-        }
+    return UserResponseModel(id=user.id, username=user.username)
