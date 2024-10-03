@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from database import User, Movie, UserReview
 from database import database as connection
+from schemas import UserBaseModel
 
 
 app = FastAPI(
@@ -28,3 +29,9 @@ async def index():
 @app.get('/about')
 async def about():
     return 'About'
+
+@app.post('/users/')
+async def create_user(user: UserBaseModel):
+    user = User.create(username=user.username, password=user.password)
+
+    return user.id
