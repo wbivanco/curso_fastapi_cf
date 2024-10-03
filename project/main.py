@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from database import database as connection
+
 
 app = FastAPI(
     title='Proyecto para reseñar películas',
@@ -8,11 +10,15 @@ app = FastAPI(
 
 @app.on_event('startup')
 def starup():
-    print('El servidor va a empezar.')
+    if connection.is_closed():
+        connection.connect()
+        print('DB connecting...')
 
 @app.on_event('shutdown')
 def shutdown():
-    print('El servidor se encuentra finalizando.')
+    if not connection.is_closed():
+        connection.close()
+        print('DB close.')
 
 @app.get('/')
 async def index():
