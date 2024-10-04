@@ -71,3 +71,13 @@ async def get_reviews():
     reviews = UserReview.select()
 
     return [user_review for user_review in reviews]
+
+
+@app.get('/reviews/{review_id}', response_model=ReviewResponseModel)
+async def get_review(review_id: int):
+    user_review = UserReview.select().where(UserReview.id == review_id).first()
+
+    if user_review is None:
+        raise HTTPException(404, 'La reseña no existe.')
+
+    return user_review
