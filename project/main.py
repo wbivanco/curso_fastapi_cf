@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from typing import List
 from database import User, Movie, UserReview
 from database import database as connection
-from schemas import UserRequestModel, UserResponseModel, ReviewRequestModel, ReviewResponseModel
+from schemas import UserRequestModel, UserResponseModel, ReviewRequestModel, ReviewResponseModel, ReviewRequestPutModel
 
 
 app = FastAPI(
@@ -79,5 +79,20 @@ async def get_review(review_id: int):
 
     if user_review is None:
         raise HTTPException(404, 'La reseña no existe.')
+
+    return user_review
+
+
+@app.put('/reviews/{review_id}', response_model=ReviewResponseModel)
+async def update_review(review_id: int, review_request: ReviewRequestPutModel):
+    user_review = UserReview.select().where(UserReview.id == review_id).first()
+
+    if user_review is None:
+        raise HTTPException(404, 'La reseña no existe.')
+    
+    user_review.review = review_request.review
+    user_review.score = review_request.score
+
+    user_review.save()
 
     return user_review

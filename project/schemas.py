@@ -22,6 +22,16 @@ class ResponseModel(BaseModel):
         getter_dict = PeeweeGetterDict
 
 
+class ReviewValidator():
+
+    @validator('score')
+    def score_validator(cls, score):
+        if score < 1 and score > 5:
+            raise ValueError('El puntaje debe estar entre 1 y 5.')
+        
+        return score
+
+
 # ----- User -----
 class UserRequestModel(BaseModel):
     username: str
@@ -41,22 +51,20 @@ class UserResponseModel(ResponseModel):
 
 
 # ----- Review -----
-class ReviewRequestModel(BaseModel):
+class ReviewRequestModel(BaseModel, ReviewValidator):
     user_id: int
     movie_id: int
     review: str
     score: int
 
-    @validator('score')
-    def score_validator(cls, score):
-        if score < 1 and score > 5:
-            raise ValueError('El puntaje debe estar entre 1 y 5.')
-        
-        return score
-
 
 class ReviewResponseModel(ResponseModel):
     id: int
     movie_id: int
+    review: str
+    score: int
+
+
+class ReviewRequestPutModel(BaseModel, ReviewValidator):
     review: str
     score: int
