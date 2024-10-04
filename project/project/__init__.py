@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 
 from .routers import user_router, review_router
 
@@ -12,8 +12,12 @@ app = FastAPI(
     version='1'
 )
 
-app.include_router(user_router)
-app.include_router(review_router)
+api_v1 = APIRouter(prefix='/api/v1')
+
+api_v1.include_router(user_router)
+api_v1.include_router(review_router)
+
+app.include_router(api_v1)
 
 @app.on_event('startup')
 def starup():
