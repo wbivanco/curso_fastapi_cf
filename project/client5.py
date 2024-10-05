@@ -1,19 +1,22 @@
 import requests
 
-URL = 'http://127.0.0.1:8000/api/v1/users/login'
+URL = 'http://127.0.0.1:8000/api/v1/users/'
 
 USER = {
     'username': 'wbivanco',
     'password': 'wbivanco123'
 }
 
-response = requests.post(URL, json=USER)
+response = requests.post(URL + 'login', json=USER)
 
 if response.status_code == 200:
     print('Usuario autenticado de forma exitosa!')
 
-    print(response.json()) 
+    user_id = response.cookies.get_dict().get('user_id')
 
-    print(response.cookies) # RequestsCookieJar
+    cookies ={'user_id': user_id}
+    response = requests.get(URL + 'reviews', cookies=cookies)
 
-    print(response.cookies.get_dict())
+    if response.status_code == 200:
+        for review in response.json():
+            print(f"> {review['review']} - {review['score']}")
