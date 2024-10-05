@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 
 from .routers import user_router, review_router
 
@@ -16,6 +17,13 @@ api_v1 = APIRouter(prefix='/api/v1')
 
 api_v1.include_router(user_router)
 api_v1.include_router(review_router)
+
+@api_v1.post('/auth')
+async def auth(data: OAuth2PasswordRequestForm = Depends()):    
+    return {
+        'username': data.username,
+        'password': data.password
+    }
 
 app.include_router(api_v1)
 
