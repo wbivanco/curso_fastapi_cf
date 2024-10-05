@@ -4,7 +4,7 @@ from fastapi.security import HTTPBasicCredentials
 from typing import List
 
 from ..database import User
-from ..common import oauth2_schema
+from ..common import get_current_user
 from ..schemas import UserRequestModel, UserResponseModel, ReviewResponseModel
 
 
@@ -42,10 +42,11 @@ async def login(credentials: HTTPBasicCredentials, response: Response):
 
 
 @router.get('/reviews')
-async def get_reviews(token: str = Depends(oauth2_schema)):
+async def get_reviews(user: User = Depends(get_current_user)):
 
     return {
-        'token': token
+        'id': user.id,
+        'username': user.username,
     }
 
 
