@@ -2,8 +2,12 @@ import jwt
 
 from datetime import datetime, timedelta
 
+from fastapi.security import OAuth2PasswordBearer
+
 
 SECRET_KEY = 'secretooculto'
+oauth2_schema = OAuth2PasswordBearer(tokenUrl="/api/v1/auth")
+
 
 def create_access_token(user, days=7):
     data = {
