@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Depends
+from fastapi import FastAPI, APIRouter, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from .routers import user_router, review_router
@@ -20,10 +20,19 @@ api_v1.include_router(review_router)
 
 @api_v1.post('/auth')
 async def auth(data: OAuth2PasswordRequestForm = Depends()):    
-    return {
-        'username': data.username,
-        'password': data.password
-    }
+    user = User.authenticate(data.username, data.password)
+
+    if user:
+        return{
+            'username': data.username,
+            'password': data.password
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Credenciales inválidas',
+            headers={'WWW-Authenticate': 'Bearer'}
+        )
 
 app.include_router(api_v1)
 
