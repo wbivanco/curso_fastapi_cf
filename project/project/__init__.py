@@ -3,6 +3,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from .routers import user_router, review_router
 
+from .common import create_access_token
+
 from .database import User, Movie, UserReview
 from .database import database as connection
 
@@ -24,8 +26,8 @@ async def auth(data: OAuth2PasswordRequestForm = Depends()):
 
     if user:
         return{
-            'username': data.username,
-            'password': data.password
+            'access_token': create_access_token(user),
+            'token_type': 'Bearer'
         }
     else:
         raise HTTPException(
